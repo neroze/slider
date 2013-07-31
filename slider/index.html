@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="../backbone/jquery-2.0.3.min.js"></script>
+<script>
+(function($){
+	$.fn.green_slider = function() {
+		var settings = {
+				per_page: 8,
+				width:900,
+				height:440
+				
+		}
+		
+		var styles = '<style>'+
+						'.green_slider_pages { position:absolute }'+
+						'.green_slider_pages > li{list-style:none; border:1px solid #333; padding:1px; margin:1px; width:15px; float:left; text-align:center; cursor:pointer;  }'+
+						'#temp_green_slider {display:none;}'+
+					'</style>';
+						
+		var self = this;
+		var total_items,
+			pages,
+			all_items,
+			cat;
+		
+		//console.log(total_items);
+		
+		var machine = {
+				style:function(){
+					this.creat_temp_holder();
+					$("head").append(styles);
+				},
+				creat_temp_holder:function(){
+					if($('#temp_green_slider').length == 0){
+						$('body').append('<div id="temp_green_slider"></div>');
+					}
+				},
+				set_temp_data:function(data){
+					if($('#temp_green_slider').children().length == "0"){
+						$('#temp_green_slider').html(data);
+					}
+					
+				},
+				count_child: function(filter){
+					if(filter == undefined || filter == "0"){
+						total_items = $(self).children().length
+					}else{
+						total_items = $(self).find('.item').filter("."+filter).length;
+					}
+					this.log("total items div : "+total_items);
+				},
+				get_items:function(filter){
+					this.log("filter = "+filter)
+					
+					if( filter == undefined || filter == 0){
+						this.log('I am here')
+						return $(self).children().get()
+					}else{
+						this.log('I am not here');
+						//this.log($(self).html());
+						return $(self).find('.item').filter("."+filter).get();
+					}
+					
+					
+				},
+				log:function(msg){
+					console.log(msg)
+				},
+				cal_total_pages:function(){
+					this.count_child();
+					pages = Math.ceil( total_items / settings.per_page );
+				},
+				stringify:function(elements){
+					
+					   return $("<div>").append(elements).html();
+					  
+				},
+				create_pages:function(filter){
+					this.log(' in create_pages : '+filter);
+					this.style();
+					all_items = this.get_items(filter);
+					this.log(all_items);
+					this.cal_total_pages(filter);
+					console.log("total items : "+total_items);
+					console.log("total pages : "+pages);
+					
+					
+					var j = 0;
+					$(self).html("");
+					for(i=0; i < pages; i++){
+						var page_string = "";
+					 	var items = all_items.slice(j, settings.per_page);
+					 	var str = this.stringify(items) ;
+					 	
+						 page_string = '<div class="page" style="float:left; height:100%; width:'+settings.width+'px;" >'+str+"</div>";
+						self_width = settings.width * pages;
+						
+						this.log(self_width);
+						$(self).append(page_string).css({width:self_width, height:"100%",overflow: "hidden",position:"relative" });
+						j = j + settings.per_pages;
+						settings.per_pages = settings.per_pages + settings.per_pages;
+					
+					}
+					if($('#root_train').length == 0){
+						$(self).wrapAll("<div id='root_train' style='overflow:hidden; width:"+settings.width+"px; height:"+settings.height+"px; '></div>");
+					}
+					
+					this.create_pagination();
+					this.slide_now();
+					this.set_temp_data($(self).html());
+					
+				},
+				generate_pagination:function(){
+					var _wrap = "<ul class='green_slider_pages' style=''>";
+					for(var i =0; i < pages; i++){
+						_wrap = _wrap+"<li>"+i+"</li>";
+					}
+					_wrap = _wrap+"</ul>";
+					return _wrap;
+				},
+				create_pagination:function(){
+					
+					$("#root_train").append(this.generate_pagination());
+				},
+				slide_now:function(){
+					var _this = this;
+					$(document).on('click','.green_slider_pages > li', function(){
+						var len = $(this).prevAll().length;
+						offset = len * settings.width;
+						_this.log(offset);
+						$(self).animate({
+							left:"-"+offset+"px"
+						});
+					})
+				},
+				reset:function(filter){
+					cat = filter;
+					
+					var _this = this;
+					var all = "";
+					
+					var _temp = $('#temp_green_slider');
+					$(self).html(_temp.html());
+					$("#root_train").find('.page').each(function(i, val){
+					
+						all = all + _this.stringify($(this).children());
+					});
+					$(self).html(all);
+					$('.green_slider_pages').remove();
+					
+					_this.create_pages(cat);
+					
+				}
+				
+				
+				
+		}
+		
+		console.log(machine.create_pages());
+		return machine;
+		
+	}
+})(jQuery);
+
+$(document).ready(function(){
+	
+	
+	var xobj = $('#continer').green_slider();
+	console.log(xobj);
+	$(document).on("change","#select_cat",function(){
+		xobj.reset($(this).val());
+	})
+})
+</script>
+<style>
+#root_train{
+	border:1px solid green;
+}
+#wrap{
+	margin: 0 auto;
+	width:1000px;
+	border:1px solid #333;
+}
+
+#continer .page > div{
+	width:260px;
+	height:240px;
+	float:left;
+
+}
+
+</style>
+</head>
+<body>
+<div id="wrap">
+<select id="select_cat">
+	<option value="0">Category</option>
+	<option value="image">Images</option>
+	<option value="video">Videos</option>
+</select>
+
+	<div id="continer">
+			<div data-title="1 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Cameron-Diaz-Minion.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="2 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Cameron-Diaz-Minion.jpg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="3 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Carrie-Fisher-Minion.jpg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="4 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Despicable-me-minions (1).jpg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="5 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (1).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="6 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (2).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="7 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (3).jpeg">
+                 </a>
+            </div>
+            
+             <div data-title="8 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images.jpeg">
+                 </a>
+            </div>
+             <div data-title="9 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minion.jpg">
+                 </a>
+            </div>
+             <div data-title="10 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minions_by_sgthk-d3i5x5q.jpg">
+                 </a>
+            </div>
+             <div data-title="11 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-07-HD-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="12 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-Cartoon-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="13 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/tumblr_mkpl7yJv1b1qdmpjpo1_500.png">
+                 </a>
+            </div>
+            
+            
+            <div data-title="6 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (2).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="7 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (3).jpeg">
+                 </a>
+            </div>
+            
+             <div data-title="8 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images.jpeg">
+                 </a>
+            </div>
+             <div data-title="9 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minion.jpg">
+                 </a>
+            </div>
+             <div data-title="10 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minions_by_sgthk-d3i5x5q.jpg">
+                 </a>
+            </div>
+             <div data-title="11 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-07-HD-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="12 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-Cartoon-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="13 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/tumblr_mkpl7yJv1b1qdmpjpo1_500.png">
+                 </a>
+            </div>
+            
+            
+            <div data-title="6 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (2).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="7 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (3).jpeg">
+                 </a>
+            </div>
+            
+             <div data-title="8 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images.jpeg">
+                 </a>
+            </div>
+             <div data-title="9 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minion.jpg">
+                 </a>
+            </div>
+             <div data-title="10 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minions_by_sgthk-d3i5x5q.jpg">
+                 </a>
+            </div>
+             <div data-title="11 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-07-HD-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="12 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-Cartoon-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="13 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/tumblr_mkpl7yJv1b1qdmpjpo1_500.png">
+                 </a>
+            </div>
+            
+            
+            
+            <div data-title="6 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (2).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="7 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (3).jpeg">
+                 </a>
+            </div>
+            
+             <div data-title="8 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images.jpeg">
+                 </a>
+            </div>
+             <div data-title="9 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minion.jpg">
+                 </a>
+            </div>
+             <div data-title="10 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minions_by_sgthk-d3i5x5q.jpg">
+                 </a>
+            </div>
+             <div data-title="11 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-07-HD-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="12 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-Cartoon-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="13 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/tumblr_mkpl7yJv1b1qdmpjpo1_500.png">
+                 </a>
+            </div>
+            
+            
+            <div data-title="6 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (2).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="7 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (3).jpeg">
+                 </a>
+            </div>
+            
+             <div data-title="8 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images.jpeg">
+                 </a>
+            </div>
+             <div data-title="9 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minion.jpg">
+                 </a>
+            </div>
+             <div data-title="10 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minions_by_sgthk-d3i5x5q.jpg">
+                 </a>
+            </div>
+             <div data-title="11 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-07-HD-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="12 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-Cartoon-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="13 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/tumblr_mkpl7yJv1b1qdmpjpo1_500.png">
+                 </a>
+            </div>
+            
+            <div data-title="6 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (2).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="7 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (3).jpeg">
+                 </a>
+            </div>
+            
+             <div data-title="8 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images.jpeg">
+                 </a>
+            </div>
+             <div data-title="9 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minion.jpg">
+                 </a>
+            </div>
+             <div data-title="10 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minions_by_sgthk-d3i5x5q.jpg">
+                 </a>
+            </div>
+             <div data-title="11 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-07-HD-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="12 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-Cartoon-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="13 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/tumblr_mkpl7yJv1b1qdmpjpo1_500.png">
+                 </a>
+            </div>
+            
+            
+            <div data-title="6 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (2).jpeg">
+                 </a>
+            </div>
+            
+            
+            <div data-title="7 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images (3).jpeg">
+                 </a>
+            </div>
+            
+             <div data-title="8 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/images.jpeg">
+                 </a>
+            </div>
+             <div data-title="9 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minion.jpg">
+                 </a>
+            </div>
+             <div data-title="10 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/minions_by_sgthk-d3i5x5q.jpg">
+                 </a>
+            </div>
+             <div data-title="11 This is static details" class="item design image">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-07-HD-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="12 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/Minions-Cartoon-Wallpaper.jpg">
+                 </a>
+            </div>
+            
+            <div data-title="13 This is static details" class="item design video">
+                 <a href="javascript:;">
+                        <img width="250" height="236" alt="" src="img/tumblr_mkpl7yJv1b1qdmpjpo1_500.png">
+                 </a>
+            </div>
+           
+	</div>
+</div>
+</body>
+</html>
