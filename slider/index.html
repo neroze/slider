@@ -10,7 +10,8 @@
 		var settings = {
 				per_page: 6,
 				width:900,
-				height:500
+				height:500,
+				speed:700
 				
 		}
 		
@@ -18,6 +19,7 @@
 						'.green_slider_pages { position:absolute }'+
 						'.green_slider_pages > li{list-style:none; border:1px solid #333; padding:1px; margin:1px; width:15px; float:left; text-align:center; cursor:pointer;  }'+
 						'#temp_green_slider {display:none;}'+
+						'.active {background:#333; color:#fff; }'+
 					'</style>';
 						
 		var self = this;
@@ -63,7 +65,7 @@
 					
 				},
 				log:function(msg){
-					//console.log(msg)
+					console.log(msg)
 				},
 				cal_total_pages:function(filter){
 					this.count_child(filter);
@@ -101,7 +103,7 @@
 					}
 					
 					this.create_pagination();
-					this.slide_now();
+					this.register_events();
 					this.set_temp_data($(self).html());
 					
 				},
@@ -117,16 +119,18 @@
 					
 					$("#root_train").append(this.generate_pagination());
 				},
-				slide_now:function(){
+				register_events:function(){
 					var _this = this;
 					$(document).on('click','.green_slider_pages > li', function(){
 						var len = $(this).prevAll().length;
 						offset = len * settings.width;
-					
+						$(this).siblings().removeClass('active');
+						$(this).addClass('active');
 						$(self).animate({
 							left:"-"+offset+"px"
-						},700);
-					})
+						},settings.speed);
+					});
+					
 				},
 				reset:function(filter){
 					var _this = this;
@@ -145,6 +149,17 @@
 					
 					_this.create_pages(cat);
 					
+				},
+				resposive_offset:function(){
+					var _screen = $(document).width();
+					switch (_screen) {
+						case value:
+							
+							break;
+	
+						default:
+							break;
+					}
 				}
 		}
 		
@@ -161,6 +176,13 @@ $(document).ready(function(){
 	//console.log(xobj);
 	$(document).on("change","#select_cat",function(){
 		xobj.reset($(this).val());
+	})
+	$('#item-details').css("height","0px");
+	$(document).on("click",".item",function(){
+		var desp = $(this).data('title');
+		$('#item-details').html(desp).animate({
+			height:"400px;"
+		});
 	})
 })
 </script>
@@ -555,6 +577,10 @@ $(document).ready(function(){
             </div>
            
 	</div>
+	<br> <br> 
+	<div id="item-details"></div>
 </div>
+
+
 </body>
 </html>
