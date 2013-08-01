@@ -1,12 +1,14 @@
 (function($){
-	$.fn.js_mint_slider = function() {
+	$.fn.js_mint_slider = function(opt) {
 		var settings = {
 				per_page: 6,
 				width:900,
 				height:500,
 				speed:700
 				
-		}
+		};
+		
+		settings = $.extend(settings, opt);
 		
 		var styles = '<style>'+
 						'.green_slider_pages { position:absolute }'+
