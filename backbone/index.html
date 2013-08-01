@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="jquery-2.0.3.min.js"></script>
+<script src="underscore-min.js"></script>
+<script src="backbone-min.js"></script>
+<script src="app.js"></script>
+
+</head>
+<body>
+<script id="my_temp" type="text/template">
+	<div class="wrap">
+		<span class="row">
+			<label> Name : </label> {{ fname }} {{ lname }} ( <b> {{ email }}</b>)
+			<button id="my_button"> Click ME </button>
+		</span>
+	</div>
+</script>
+<div id="search_container"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    SearchView = Backbone.View.extend({
+        initialize: function(){
+            this.render();
+        },
+        
+        render:function(){
+        	var data = {
+        				fname:"Niraj",
+        				lname:"Maharjan",
+        				email:"jumper@gmail.com"
+        	}
+        	this.template = _.template($("#my_temp").html(), data);
+        	this.$el.html(this.template);
+        	
+        	return this;
+        },
+        
+        events:{
+        	"click button#my_button" : "do_search"
+        },
+        
+        do_search:function(){
+        	alert("filer");
+        }
+    });
+    
+    var search_view = new SearchView({ el: $("#search_container") });
+    
+});
+    
+    
+</script>
+
+
+
+
+</body>
+</html>

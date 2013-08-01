@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="jquery-2.0.3.min.js"></script>
+<script src="underscore-min.js"></script>
+<script src="backbone-min.js"></script>
+<script src="app.js"></script>
+
+</head>
+<body>
+<script>
+var Person = Backbone.Model.extend({
+	url:"home/",
+	defaults:{
+		lname:"Maharjan",
+		fname:"Name",
+		email:"mail@youremail.com"
+	},
+	
+	initialize: function(){
+		alert("Welcome to this world"); 
+		
+		this.on("change:name", function(model){ 
+				var name = model.get("name"); 
+				alert("Changed my name to " + name );
+		});
+	},
+
+	extra_details: function(){
+		this.set({ hobby:"playing", sex:"male"});
+		
+	},
+	nameChange:function(){
+		console.log("name changed")
+	}
+	
+});
+
+// collection starts form here
+var Collage = Backbone.Collection.extend({ model: Person }); 
+
+var informatics = new Collage([
+								{lname:"Maharjan",fname:"Niraj",email:"neerooze@gmail.com"}, 
+								{fname:"buddha",lname:'manandhar',email:"bud_peace@gmail.com"},
+								{fname:"Dino",lname:"Karki", email:"dino@gmail.com"}
+							]);
+
+</script>
+
+</body>
+</html>
