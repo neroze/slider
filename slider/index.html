@@ -8,9 +8,9 @@
 (function($){
 	$.fn.green_slider = function() {
 		var settings = {
-				per_page: 8,
+				per_page: 6,
 				width:900,
-				height:440
+				height:500
 				
 		}
 		
@@ -24,7 +24,8 @@
 		var total_items,
 			pages,
 			all_items,
-			cat;
+			cat,
+			diff = settings.per_page;
 		
 		//console.log(total_items);
 		
@@ -50,27 +51,22 @@
 					}else{
 						total_items = $(self).find('.item').filter("."+filter).length;
 					}
-					this.log("total items div : "+total_items);
 				},
 				get_items:function(filter){
-					this.log("filter = "+filter)
 					
 					if( filter == undefined || filter == 0){
-						this.log('I am here')
 						return $(self).children().get()
 					}else{
-						this.log('I am not here');
-						//this.log($(self).html());
 						return $(self).find('.item').filter("."+filter).get();
 					}
 					
 					
 				},
 				log:function(msg){
-					console.log(msg)
+					//console.log(msg)
 				},
-				cal_total_pages:function(){
-					this.count_child();
+				cal_total_pages:function(filter){
+					this.count_child(filter);
 					pages = Math.ceil( total_items / settings.per_page );
 				},
 				stringify:function(elements){
@@ -79,30 +75,26 @@
 					  
 				},
 				create_pages:function(filter){
-					this.log(' in create_pages : '+filter);
 					this.style();
 					all_items = this.get_items(filter);
-					this.log(all_items);
 					this.cal_total_pages(filter);
-					console.log("total items : "+total_items);
-					console.log("total pages : "+pages);
-					
 					
 					var j = 0;
 					$(self).html("");
-					for(i=0; i < pages; i++){
+					for(var i=0; i < pages; i++){
 						var page_string = "";
 					 	var items = all_items.slice(j, settings.per_page);
 					 	var str = this.stringify(items) ;
 					 	
-						 page_string = '<div class="page" style="float:left; height:100%; width:'+settings.width+'px;" >'+str+"</div>";
+						page_string = '<div class="page" style="float:left; height:100%; width:'+settings.width+'px;" >'+str+"</div>";
 						self_width = settings.width * pages;
 						
-						this.log(self_width);
+			
 						$(self).append(page_string).css({width:self_width, height:"100%",overflow: "hidden",position:"relative" });
-						j = j + settings.per_pages;
-						settings.per_pages = settings.per_pages + settings.per_pages;
-					
+						
+						j = j + diff;
+						settings.per_page = settings.per_page + diff;
+						
 					}
 					if($('#root_train').length == 0){
 						$(self).wrapAll("<div id='root_train' style='overflow:hidden; width:"+settings.width+"px; height:"+settings.height+"px; '></div>");
@@ -130,17 +122,17 @@
 					$(document).on('click','.green_slider_pages > li', function(){
 						var len = $(this).prevAll().length;
 						offset = len * settings.width;
-						_this.log(offset);
+					
 						$(self).animate({
 							left:"-"+offset+"px"
-						});
+						},700);
 					})
 				},
 				reset:function(filter){
-					cat = filter;
-					
 					var _this = this;
 					var all = "";
+					cat = filter;
+					settings.per_page = diff;
 					
 					var _temp = $('#temp_green_slider');
 					$(self).html(_temp.html());
@@ -154,12 +146,9 @@
 					_this.create_pages(cat);
 					
 				}
-				
-				
-				
 		}
 		
-		console.log(machine.create_pages());
+		machine.create_pages();
 		return machine;
 		
 	}
@@ -169,7 +158,7 @@ $(document).ready(function(){
 	
 	
 	var xobj = $('#continer').green_slider();
-	console.log(xobj);
+	//console.log(xobj);
 	$(document).on("change","#select_cat",function(){
 		xobj.reset($(this).val());
 	})
