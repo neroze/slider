@@ -136,7 +136,7 @@
 					var _temp = $('#temp_green_slider');
 					$(self).html(_temp.html());
 					$(self).css({left:"0px"});
-					$("#root_train").find('.page').each(function(i, val){
+					$("#root_train").stop(true).find('.page').each(function(i, val){
 					
 						all = all + _this.stringify($(this).children());
 					});
