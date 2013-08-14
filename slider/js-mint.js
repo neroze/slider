@@ -94,7 +94,7 @@
 						
 					}
 					if($('#root_train').length == 0){
-						$(self).wrapAll("<div id='root_train' style='overflow:hidden; width:"+settings.width+"px; height:"+settings.height+"px; '></div>");
+						$(self).wrapAll("<div id='root_train' style='overflow:hidden; width:"+settings.width+"px; height:auto; '></div>");
 					}
 					
 					this.create_pagination();
